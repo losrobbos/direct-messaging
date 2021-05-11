@@ -14,11 +14,23 @@
   align-items: center;
   /* justify-content: center; */
   font-size: calc(10px + 2vmin);
-  color: white;
+  /* color: white; */
 }
 
 .App-link {
   color: #61dafb;
+}
+
+
+#chat-container {
+  display: flex;
+}
+
+#chat-container div:first-child {
+  flex-basis: 30%;
+}
+#chat-container div:last-child {
+  flex-basis: 70%;
 }
 
 #chat-area {
@@ -54,7 +66,7 @@
   padding: 8px;
   border-radius: 3px;
   flex-grow: 1;
-  color: white;
+  /* color: white; */
   font-size: 1.2rem;
 }
 

@@ -1,98 +1,109 @@
 import './App.css';
-import io from 'socket.io-client'
 import { useEffect, useRef, useState } from 'react';
-import faker from 'faker'
+import io from 'socket.io-client'
+import axios from 'axios'
+import ChatHistory from './ChatHistory';
+import ContactList from './ContactList';
 
-const MESSAGE_SERVER_URL = "http://localhost:5000/"
+const MESSAGE_SERVER_URL = process.env.MESSAGE_SERVER_URL || "http://localhost:5000/"
+axios.defaults.baseURL = MESSAGE_SERVER_URL
 
 function App() {
 
   const [socket, setSocket] = useState()
-  const [user, setUser] = useState({ 
-    _id:  faker.random.alphaNumeric(10), 
-    name: faker.name.firstName()
-  })
+  const [user, setUser] = useState()
+  const [contact, setContact] = useState()
+  const [contacts, setContacts] = useState([])
+  const [chatHistory, setChatHistory] = useState([])
 
-  const [chatHistory, setChatHistory] = useState([
-    { text: "Hey there", user: "Rob", },
-    { text: "Hi Rob", user: "Raquel" },
-  ])
+  const userRef = useRef()
 
-  const msgRef = useRef() // store fresh message
-  const userToId = useRef()
-
-  // initialize connection on load
+  // ONCE USER IS LOGGED IN => FETCH CHAT CONTACTS
   useEffect(() => {
+
+    if(!user) return
+
+    axios.get("/users")
+    .then( res => {
+      console.log(res.data)
+      setContacts(res.data)
+    })
+    .catch(err => { 
+      console.log("[ERROR] User fetching...")
+      console.log(err.response ? err.response.data : "API not reachable")
+    })
+
+  }, [user])
+
+
+  // ONCE CONTACT SELECTED / SWITCHED => initiate chat
+  useEffect(() => {
+
+    if(!contact) return
+
     // set user ID on connection!
     // other parties can then send messages directly to our userId!
     const socket = io(MESSAGE_SERVER_URL, { query: `userId=${user._id}` }) // connect to API
     setSocket(socket)
 
+    // clear previous chat history...
+    setChatHistory([])
+
     // Disconnect to socket on leave...
     return () => socket && socket.disconnect()
 
-  }, [])
+  }, [contact])
   
 
-  // define listeners AFTER connection is setup
-  useEffect(() => {
+  // LOGIN USER AT API
+  const login = async () => {
+    const userName = userRef.current.value
 
-    if(socket) {
-      console.log("Registering chat message listener...")
-      socket.on("message", (chatMsg) => {
-        console.log("Received message from server: ", chatMsg)
-        setChatHistory([...chatHistory, chatMsg])
-      })
+    if(!userName) return alert("Please state username, buddy...")
+    
+    try {
+      const res = await axios.post("/login", { name: userName })
+      setUser(res.data)
     }
-
-    return () => {
-      if(socket) socket.off('message')
+    catch(err) {
+      console.log("[ERROR] Login...")
+      console.log(err.response ? err.response.data : "API not reachable")
+      setUser()
     }
-
-  }, [socket, chatHistory]) // this effect will FIRE when the socket was set!
-
-  const addChatMessageToHistory = (e) => {
-    e.preventDefault()
-
-    if(!msgRef.current.value || !userToId.current.value) {
-      alert("Please state a message + receiver")
-      return
-    }
-
-    let chatMsg = { text: msgRef.current.value, user: user.name, receiverId: userToId.current.value }
-    msgRef.current.value = "" // clear input box
-    userToId.current.value = "" // clear ID box
-
-    socket.emit('message', chatMsg) // send an EVENT to server! (to a hotline channel)
-    setChatHistory([ ...chatHistory, chatMsg ])    
   }
- 
-  // create JSX list from chat history entries
-  let jsxChatHistory = chatHistory.map((chatMsg, i) => (
-    <div className="chat-msg" key={i}>
-      <label>{chatMsg.user}:</label>
-      <span>{chatMsg.text}</span>
-    </div>
-  ))
+
+  const logout = () => {
+    setContact()
+    setUser()
+    setChatHistory()
+  }
+
 
   return (
     <div className="App">
-      <header className="App-header">
-        <h2>Chat</h2>
-        <div>My ID: {user._id}</div>
-        <div id="chat-area">{jsxChatHistory}</div>
-        <form id="message-send" onSubmit={addChatMessageToHistory}>
-          <input 
-            autoComplete="off"
-            ref={msgRef}
-            placeholder={`Type your message, ${user.name}...`} />
-          <input 
-            autoComplete="off"
-            ref={userToId}
-            placeholder={`<ReceiverID>`} />
-          <button type="submit" >Send</button>
-        </form>
-      </header>
+      <nav>
+        { !user && <><input type="text" ref={userRef} /><button onClick={ login }>Login</button></> }
+        { user && <><span>Hello {user.name}</span> <button onClick={ logout } >Logout</button></> }
+      </nav>
+
+      <div id="chat-container">
+        { user && contacts.length && 
+          <ContactList 
+            user={user} 
+            contacts={contacts} 
+            contact={contact} 
+            setContact={setContact} 
+          /> }
+        { user && contact && 
+          <ChatHistory 
+            socket={socket} 
+            user={user} 
+            contact={contact} 
+            chatHistory={chatHistory} 
+            setChatHistory={setChatHistory} 
+          /> }
+      </div>
+
     </div>
   );
 }
