@@ -15,7 +15,7 @@ const ChatHistory = ({ user, contact, socket, chatHistory, setChatHistory }) => 
       console.log("Received message from server: ", chatMsg)
 
       // ONLY add messages to histoy by allowed contact user...
-      if(chatMsg.senderId != contact._id) {
+      if(chatMsg.senderId._id != contact._id) {
         console.log("Message discarded... non active room user")
         return
       }
@@ -34,29 +34,34 @@ const ChatHistory = ({ user, contact, socket, chatHistory, setChatHistory }) => 
     if(!msgRef.current.value) return alert("Please state a message")
 
     let chatMsg = { 
-      text: msgRef.current.value, 
-      user: user.name, 
-      senderId: user._id,
+      msg: msgRef.current.value, 
+      senderId: {
+        _id: user._id,
+        username: user.username
+      },
       receiverId: contact._id }
     msgRef.current.value = "" // clear input box
 
-    socket.emit('message', chatMsg) // send an EVENT to server! (to a hotline channel)
-    setChatHistory([ ...chatHistory, chatMsg ])    
+    // send an EVENT to server! (to a hotline channel)
+    socket.emit('message', chatMsg) 
+    setChatHistory([ ...chatHistory, chatMsg ]) // add to local history too
   }
  
   // create JSX list from chat history entries
-  let jsxHistory = chatHistory.map((chatMsg, i) => (
+  let jsxHistory = (chatHistory || []).map((chatMsg, i) => (
     <div className="chat-msg" key={i}>
-      <label>{chatMsg.user}:</label>
-      <span>{chatMsg.text}</span>
+      <label>{chatMsg.senderId.username}:</label>
+      <span>{chatMsg.msg}</span>
     </div>
   ))
 
   return ( 
-    <div id="history">
+    <div id="chat-history">
       <h2>Chat</h2>
-      <div id="chat-area">{jsxHistory}</div>
-      <form id="message-send" onSubmit={addChatMessageToHistory}>
+      <div className="chat-messages">
+        {jsxHistory}
+      </div>
+      <form className="frm-message" onSubmit={addChatMessageToHistory}>
         <input 
           autoComplete="off"
           ref={msgRef}

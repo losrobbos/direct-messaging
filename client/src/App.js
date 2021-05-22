@@ -1,12 +1,10 @@
-import './App.css';
+import './App.scss';
 import { useEffect, useRef, useState } from 'react';
 import io from 'socket.io-client'
-import axios from 'axios'
+import axios, { MESSAGE_SERVER_URL } from './helpers/axios'
 import ChatHistory from './ChatHistory';
 import ContactList from './ContactList';
-
-const MESSAGE_SERVER_URL = process.env.MESSAGE_SERVER_URL || "http://localhost:5000/"
-axios.defaults.baseURL = MESSAGE_SERVER_URL
+import Login from './Login'
 
 function App() {
 
@@ -16,12 +14,8 @@ function App() {
   const [contacts, setContacts] = useState([])
   const [chatHistory, setChatHistory] = useState([])
 
-  const userRef = useRef()
-
   // ONCE USER IS LOGGED IN => FETCH CHAT CONTACTS
   useEffect(() => {
-
-    if(!user) return
 
     axios.get("/users")
     .then( res => {
@@ -33,7 +27,7 @@ function App() {
       console.log(err.response ? err.response.data : "API not reachable")
     })
 
-  }, [user])
+  }, [] )
 
 
   // ONCE CONTACT SELECTED / SWITCHED => initiate chat
@@ -46,31 +40,22 @@ function App() {
     const socket = io(MESSAGE_SERVER_URL, { query: `userId=${user._id}` }) // connect to API
     setSocket(socket)
 
+    // load chat history from server
+    console.log("Fetching history of users: ", user._id, contact._id)
+    axios.get(`/chat-history/${user._id}/${contact._id}`)
+    .then(res => {
+      console.log("History: ", res.data)
+      setChatHistory(res.data)
+    })
+
     // clear previous chat history...
-    setChatHistory([])
+    // setChatHistory([])
 
     // Disconnect to socket on leave...
     return () => socket && socket.disconnect()
 
   }, [contact])
   
-
-  // LOGIN USER AT API
-  const login = async () => {
-    const userName = userRef.current.value
-
-    if(!userName) return alert("Please state username, buddy...")
-    
-    try {
-      const res = await axios.post("/login", { name: userName })
-      setUser(res.data)
-    }
-    catch(err) {
-      console.log("[ERROR] Login...")
-      console.log(err.response ? err.response.data : "API not reachable")
-      setUser()
-    }
-  }
 
   const logout = () => {
     setContact()
@@ -82,8 +67,8 @@ function App() {
   return (
     <div className="App">
       <nav>
-        { !user && <><input type="text" ref={userRef} /><button onClick={ login }>Login</button></> }
-        { user && <><span>Hello {user.name}</span> <button onClick={ logout } >Logout</button></> }
+        { !user && <Login contacts={contacts} setUser={setUser} /> }
+        { user && <><span>Hello {user.username}</span> <button onClick={ logout } >Logout</button></> }
       </nav>
 
       <div id="chat-container">

@@ -1,0 +1,95 @@
+* {
+  box-sizing: border-box;
+}
+
+.App {
+  text-align: center;
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* justify-content: center; */
+  font-size: calc(10px + 2vmin);
+  /* color: white; */
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+
+#chat-container {
+  display: flex;
+
+  // contact list
+  div:first-child {
+    flex-basis: 30%;
+  }
+
+  // chat messages ( history )
+  #chat-container div:last-child {
+    flex-basis: 70%;
+  }
+
+  &:div {
+    border: 1px solid #ccc;    
+  }
+}
+
+.contacts {
+  .contact {
+    padding: 10px;
+    margin: 10px 0;
+    text-transform: uppercase;
+    background: #ddd;
+    box-shadow: 1px 1px 2px black;
+  }
+}
+
+.chat-messages {
+  height: 70vh; // limit visible height
+  overflow: auto; // allow full message display on scrolling
+
+  .chat-msg {
+    width: 100%;
+    padding: 5px;
+    border-radius: 3px;
+    label {
+      display: inline-block;
+      width: 120px;
+    }
+    /* box-shadow: 1px 1px 1px #ccc; */
+  }
+}
+
+.chat-messages, .frm-message {
+  text-align: initial;
+  width: 500px;
+  border: 1px solid #ccc;
+}
+
+.frm-message {
+  display: flex;
+  justify-content: space-between;
+  
+  input {
+    background: transparent;
+    padding: 8px;
+    border-radius: 3px;
+    flex-grow: 1;
+    /* color: white; */
+    font-size: 1.2rem;
+  }
+  
+  button {
+    background: lightsteelblue;
+  }
+  
+  button:hover {
+    opacity: 0.7;
+  }
+}
