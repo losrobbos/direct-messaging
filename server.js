@@ -1,3 +1,5 @@
+require("dotenv") // load environment from .env file (if exists)
+
 const express = require("express")
 const app = express() // create API
 const socketIo = require("socket.io")

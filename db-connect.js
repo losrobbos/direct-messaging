@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const strConn = "mongodb://localhost/chat_direct_db"
+const strConn =  process.env.MONGO_URI || "mongodb://localhost/chat_direct_db"
 mongoose.connect(strConn, {
   useNewUrlParser: true, 
   useUnifiedTopology: true,

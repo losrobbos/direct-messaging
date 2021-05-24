@@ -1,5 +1,20 @@
 # Socket.io
 
+Find following a sample how to setup a simplified fullstack direct messaging app using React, Express, Socket.io & MongoDB.
+
+For the Database setup create a .env file. Copy the .env.sample content into it and adapt the URL to your Mongo database.
+
+Run `npm install`
+
+Afterwards seed in some initial users + chat history: `npm run seed`
+
+Now run `npm start`. 
+
+Frontend and backend should start in parallel on the same terminal.
+
+Start chatting :)
+
+
 ## Snippets
 
 
