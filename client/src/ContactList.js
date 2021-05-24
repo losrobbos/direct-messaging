@@ -4,8 +4,11 @@ const ContactList = ({ user, contacts, contact, setContact }) => {
 
     if(user._id == ctc._id) return
 
-    return <div className="contact" key={ctc._id} onClick={(e) => setContact(ctc)} >
-      { contact && contact._id == ctc._id ? <b>{ctc.username}</b> : ctc.username }
+    // style selected contact 
+    let cssContact = contact && contact._id == ctc._id ? 'contact-selected' : ''
+
+    return <div className={`contact ${cssContact}`} key={ctc._id} onClick={(e) => setContact(ctc)} >
+      { ctc.username }
     </div>
   })
 

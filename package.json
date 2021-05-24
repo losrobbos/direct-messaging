@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "api": "node server.js",
     "dev": "nodemon server.js",
-    "ui": "npm start --prefix chat-ui",
+    "ui": "npm start --prefix client",
     "start": "concurrently 'npm run dev' 'npm run ui' ",
     "seed": "node seed.js"
   },

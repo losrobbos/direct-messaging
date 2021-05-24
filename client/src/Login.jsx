@@ -7,6 +7,7 @@ const Login = ({ contacts, setUser }) => {
 
   // LOGIN USER AT API
   const login = async (e) => {
+
     e.preventDefault()
     
     const userName = userRef.current.value;
@@ -28,6 +29,7 @@ const Login = ({ contacts, setUser }) => {
       <input type="text" ref={ userRef } />
       <button type="submit">Login</button>
       <select onChange={(e) => userRef.current.value = e.target.value }>
+        <option value="">(none)</option>
         {contacts.map(contact => <option key={contact._id} value={contact.username}>{contact.username}</option>)}
       </select>
       {/* <div>Users: {contacts.map(contact => <span>{contact.username} </span>)} </div> */}

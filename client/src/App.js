@@ -68,7 +68,12 @@ function App() {
     <div className="App">
       <nav>
         { !user && <Login contacts={contacts} setUser={setUser} /> }
-        { user && <><span>Hello {user.username}</span> <button onClick={ logout } >Logout</button></> }
+        { user && <>
+          <span>Hello <b>{user.username.toUpperCase()}</b> </span> 
+          <svg onClick={ logout } xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          </svg>
+        </> }
       </nav>
 
       <div id="chat-container">
