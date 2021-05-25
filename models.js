@@ -6,7 +6,13 @@ const UserSchema = new Schema({
   username: { type: String, required: true },
   email: { type: String },
   password: { type: String },
-  socketId: { type: String }
+  
+  // optional: we could store the socket.id of the user during his socket session in order to share this ID with other users
+  // then other users can send messages to this user by his socket
+  // however: we can also use the ID of the user as socket.id => therefore we not gonna use the field below, but keep it for reference
+  
+  // socketId: { type: String }  
+
 })
 
 const User = model("User", UserSchema)
