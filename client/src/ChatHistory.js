@@ -7,9 +7,7 @@ const ChatHistory = ({ user, contact, socket, chatHistory, setChatHistory }) => 
   // define listeners AFTER connection is setup
   useEffect(() => {
 
-    if(!socket) {
-      return 
-    }
+    if(!socket) return // it makes no sense to listen for messaging, if we have no socket connection :)
 
     // when receiving new message - 
     socket.on("message", (chatMsg) => {
@@ -21,7 +19,7 @@ const ChatHistory = ({ user, contact, socket, chatHistory, setChatHistory }) => 
         return
       }
 
-      setChatHistory([...chatHistory, chatMsg])
+      setChatHistory([...chatHistory, chatMsg]) // append new message to chat history
     })
 
     return () => socket && socket.off('message') // unregister message event listening...
