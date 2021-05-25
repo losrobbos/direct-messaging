@@ -1,4 +1,4 @@
-require("dotenv") // load environment from .env file (if exists)
+require("dotenv").config() // load environment from .env file (if exists)
 
 const express = require("express")
 const app = express() // create API
