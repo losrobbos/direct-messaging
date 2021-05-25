@@ -60,8 +60,7 @@ const ChatHistory = ({ user, contact, socket, chatHistory, setChatHistory }) => 
       <label>{chatMsg.senderId.username}:</label>
       <span>{chatMsg.msg}</span>
     </div>
-  }
-  )
+  })
 
   return ( 
     <div className="chat-history">
