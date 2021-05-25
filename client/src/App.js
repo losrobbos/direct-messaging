@@ -9,12 +9,12 @@ import Login from './Login'
 function App() {
 
   const [socket, setSocket] = useState()
-  const [user, setUser] = useState()
-  const [contact, setContact] = useState()
-  const [contacts, setContacts] = useState([])
-  const [chatHistory, setChatHistory] = useState([])
+  const [user, setUser] = useState() // this is us :)
+  const [contacts, setContacts] = useState([]) // this stores all our chat contacts
+  const [contact, setContact] = useState() // this stores the chat contact we currently (!) have a chat with
+  const [chatHistory, setChatHistory] = useState([]) // this stores the message history of the user we currently chat with
 
-  // ONCE USER IS LOGGED IN => FETCH CHAT CONTACTS
+  // FETCH CHAT CONTACTS on load
   useEffect(() => {
 
     axios.get("/users")
@@ -37,21 +37,20 @@ function App() {
 
     // set user ID on connection!
     // other parties can then send messages directly to our userId!
+    // by the way: exactly this call of the io(..) function will trigger the io.on("connection") event in the server.js file !
     const socket = io(MESSAGE_SERVER_URL, { query: `userId=${user._id}` }) // connect to API
     setSocket(socket)
 
-    // load chat history from server
     console.log("Fetching history of users: ", user._id, contact._id)
+    
+    // load chat history from server
     axios.get(`/chat-history/${user._id}/${contact._id}`)
     .then(res => {
       console.log("History: ", res.data)
       setChatHistory(res.data)
     })
 
-    // clear previous chat history...
-    // setChatHistory([])
-
-    // Disconnect to socket on leave...
+    // Disconnect socket when leaving chat...
     return () => socket && socket.disconnect()
 
   }, [contact])
@@ -60,12 +59,14 @@ function App() {
   const logout = () => {
     setContact()
     setUser()
-    setChatHistory()
+    setChatHistory([])
   }
 
 
   return (
     <div className="App">
+
+      {/* NAVBAR with login status */}
       <nav>
         { !user && <Login contacts={contacts} setUser={setUser} /> }
         { user && <>
@@ -76,6 +77,7 @@ function App() {
         </> }
       </nav>
 
+      {/* CHAT CONTAINER with two panels: chat contacts on the left, chat messages on the right */}
       <div id="chat-container">
         { user && contacts.length && 
           <ContactList 

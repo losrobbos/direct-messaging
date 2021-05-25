@@ -32,7 +32,6 @@ const Login = ({ contacts, setUser }) => {
         <option value="">(none)</option>
         {contacts.map(contact => <option key={contact._id} value={contact.username}>{contact.username}</option>)}
       </select>
-      {/* <div>Users: {contacts.map(contact => <span>{contact.username} </span>)} </div> */}
     </form>
   );
 };
