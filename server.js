@@ -25,7 +25,6 @@ app.get("/users", async (req, res, next) => {
 app.get("/chat-history/:meId/:otherId", async (req, res, next) => {
   const { meId, otherId } = req.params
   console.log(meId, otherId)
-  // const history = await Message.find()
   const history = await Message.getContactHistory(meId, otherId)
   console.log({ history })
   res.json(history)
@@ -33,7 +32,6 @@ app.get("/chat-history/:meId/:otherId", async (req, res, next) => {
 
 // minimalistic login => username is enough for the showcase :)
 app.post("/login", async (req, res, next) => {
-  // let userFound = users.find(user => user.name == req.body.name)
   let userFound = await User.findOne({ username: req.body.name })
   if(!userFound) {
     return res.status(400).json({ error: `User ${req.body.name} does not exist` })
@@ -42,12 +40,7 @@ app.post("/login", async (req, res, next) => {
 })
 
 // wrap server with a socket server
-const io = socketIo(server, {
-  cors: { // configure CORS
-    origin: "*"
-  }
-})
-
+const io = socketIo(server, { cors: { origin: "*" } })
 
 // listen to incoming clients...
 io.on("connection", (socket) => {
