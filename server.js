@@ -49,7 +49,7 @@ io.on("connection", (socket) => {
   const userId = socket.handshake.query.userId 
   console.log("User ID connected: ", userId)
 
-  socket.join(userId) // create "private room" - everyone can now send messages to this room by sending a message to "userId" 
+  socket.join(userId) // create "private room" - everyone can now send messages to this room / user by sending a message to "userId" 
 
   // listen for incoming messages (= message hotline)
   socket.on("message", (data) => {
