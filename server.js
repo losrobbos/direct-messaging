@@ -1,11 +1,11 @@
 require("dotenv").config() // load environment from .env file (if exists)
+require("./db-connect")
 
 const express = require("express")
 const app = express() // create API
 const socketIo = require("socket.io")
 const cors = require("cors")
 const logger = require("morgan") // morgan is a logger middeware, which logs every call to a route to the terminal
-require("./db-connect")
 const { Message, User } = require("./models")
 
 const PORT = process.env.PORT || 5000
@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 5000
 const server = app.listen(PORT, () => console.log("API server started up", PORT))
 
 app.use(cors())
-app.use(express.json()) // parse incoming data into req.data
+app.use(express.json())
 app.use(logger("dev")) // log each request to any route to the terminal - simplified fullstack debugging a lot!
 
 // get list of users
